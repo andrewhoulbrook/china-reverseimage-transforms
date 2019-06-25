@@ -1,14 +1,16 @@
 # China Reverse Image Search (Maltego Transforms)
 
-A set of three Maltego local transforms useful for performing reverse image searches via three of the most popular search engines in mainland China. 
+A set of three Maltego local transforms useful for performing reverse image searches via three of the most popular search engines in mainland China: 
 
-<center>
+* [Baidu Images](https://images.baidu.com/)
+* [Qihoo 360 Images](http://images.so.com/)
+* [Sogou Images](https://image.sogou.com/)  |
 
-![Baidu Images](/doc/baidu.jpg)            | ![Qihoo 360 Images](/doc/so360.jpg)       | ![Sogou Images](/doc/sogou.jpg)           |  
-:-----------------------------------------:|:-----------------------------------------:|:-----------------------------------------:|
-[Baidu Images](https://images.baidu.com/)  | [Qihoo 360 Images](http://images.so.com/) | [Sogou Images](https://image.sogou.com/)  |
-
-</center>
+<p align="center">
+  <img src="/doc/baidu.jpg"/>
+  <img src="/doc/so360.jpg"/>
+  <img src="/doc/sogou.jpg"/>
+</p>
 
 These transform scripts are old but have been recently modified and remain useful at the time of writing.  
 
@@ -22,7 +24,7 @@ In China, Baidu is the king of search. Baidu also has a powerful reverse image s
 
 These scripts aim to help quickly push reverse image queries, within Maltego, across the three best reverse image search engines in China and combine their results.  
 
-<center>
+<div align="center">
 
 Baidu Reverse Image Search                        |
 :------------------------------------------------:|
@@ -32,11 +34,11 @@ Qihoo 360 Reverse Image Search                    |
 :------------------------------------------------:|
 ![360 - Jack Ma Test Image](/doc/jack_360.png)    |
 
-</center>
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+</div>
 
 ### Prerequisites
+
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 The transforms are written in Python 2.7.
 
