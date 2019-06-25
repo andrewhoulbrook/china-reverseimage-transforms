@@ -10,7 +10,7 @@ These transform scripts are old but have been recently modified and remain usefu
 
 ## Getting Started
 
-Reverse image searching is a often used technique among OSINT practitioners and during digital forensic investigations. From detecting fake online profiles and uncovering social media footprints to brand monitoring and geolocation, reverse image searching has many uses.  
+Reverse image searching is an often used technique among OSINT practitioners and during digital forensic investigations. From detecting fake online profiles and uncovering social media footprints to brand monitoring and geolocation, reverse image searching has many uses.  
 
 Common tools include [Google Images](http://images.google.com), [Tineye](https://www.tineye.com), [Yandex Images](https://yandex.ru/images/) and [RootAround](http://rootabout.com/) to name a few. Find more at ['OSINT Framework.com'](https://osintframework.com/). 
 
@@ -80,9 +80,11 @@ The tranforms return the reverse image search results as ```maltego.website``` e
   <img src="/doc/news_image2.gif"/>
 </p>
 
-For Sogou and Qihoo 360, the search results are categorized as either **exact matching images** or **similar images**. A field within the Maltego entity added to the chart will also indicate whether the image was found as the result of an exact or similar match. Search results featuring exact matches to the reference image will also be highlighted on the chart using a **red** coloured link and a red Maltego entity **Bookmark**, making it easier to select a subset of only exact matches within the results returned to the chart. 
+For Sogou and Qihoo 360, the search results are categorized as either **exact matching images** or **visually similar images**. A field within the Maltego entity added to the chart will also indicate whether the image was found as the result of an exact or visually similar match. Search results featuring exact matches to the reference image will also be highlighted on the chart using a **red** coloured link and a red Maltego entity **Bookmark**, making it easier to select a subset of only exact matches within the results returned to the chart. 
 
-The Sogou and Qihoo 360 scripts could be split into two different levels of transforms if desired: one to return exact matches only; the other to return similar matching images.  
+The Sogou and Qihoo 360 scripts could be split into two different levels of transforms if desired: one to return exact matches only; the other to return visually similar matching images.  
+
+The scripts are rudimentary and only scrape the first page of results for each of the three Chinese search engines.  
 
 ## Built With
 
