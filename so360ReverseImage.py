@@ -34,7 +34,11 @@ data = {'imgurl': IMAGE_URL,
         'srcsp': 'st_search'} 
 
 # Call the images.so.com reverse search API, returns html 
-page_html = requests.post(url=API_ENDPOINT, data=data) 
+try:
+    page_html = requests.post(url=API_ENDPOINT, data=data) 
+
+except Exception as call_err:
+    m.addUIMessage(str(call_err), 'FatalError')  
 
 # Targets for scrapping: 360's image URL and the orignal source URL
 img_urls = []
@@ -48,15 +52,24 @@ if regex_imgkey:
 else: sys.exit(1)
 
 # Get results for exact image matches 
-matches_html = requests.get(MATCHING_URL) 
+try:
+    matches_html = requests.get(MATCHING_URL)
 
-# Regex pattern matching for image urls of exact matching images
-regex_img_urls = re.findall(r"\"thumb\"\:\"(.*?)\"", matches_html.text)
-for regex_img_url in regex_img_urls: img_urls.append(regex_img_url.replace("\\", ""))
+except Exception as call_err:
+    m.addUIMessage(str(call_err), 'FatalError')  
 
-# Regex pattern matching for source urls of exact matching images
-regex_source_urls = re.findall(r"\"link\"\:\"(.*?)\"", matches_html.text)
-for regex_source_url in regex_source_urls: source_urls.append(regex_source_url.replace("\\", ""))
+# Scrape data relating to exact matches found by reverse image search
+try:
+    # Regex pattern matching for image urls of exact matching images
+    regex_img_urls = re.findall(r"\"thumb\"\:\"(.*?)\"", matches_html.text)
+    for regex_img_url in regex_img_urls: img_urls.append(regex_img_url.replace("\\", ""))
+
+    # Regex pattern matching for source urls of exact matching images
+    regex_source_urls = re.findall(r"\"link\"\:\"(.*?)\"", matches_html.text)
+    for regex_source_url in regex_source_urls: source_urls.append(regex_source_url.replace("\\", ""))
+
+except Exception as scrape_err:
+    m.addUIMessage(str(scrape_err), 'PartialError')  
 
 # Targets for scrapping: 360's image URL and the orignal source URL for visually similar images
 similar_img_urls = []
@@ -73,55 +86,66 @@ dcap["phantomjs.page.settings.userAgent"] = (
 
 # Instantiate a browser entity using Selenium and chosen webdriver, e.g. browser = webdriver.Chrome(CHROME_PATH)
 browser = webdriver.PhantomJS(PHANTOMJS_PATH, desired_capabilities=dcap)
-browser.get(SIMILAR_URL)
-browser.set_page_load_timeout(60)
 
-# Wait for reverse image search results to load
-WebDriverWait(browser, 30).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'div#bd')))
+# Perform reverse image search for visually similar images
+try:
+    browser.get(SIMILAR_URL)
+    browser.set_page_load_timeout(60)
 
-# Select the 'visually similar' list of image results  
-imglist = browser.find_element(By.CSS_SELECTOR, 'div.like-content')
+    # Wait for reverse image search results to load
+    WebDriverWait(browser, 30).until(EC.visibility_of_element_located((By.CSS_SELECTOR, 'div#bd')))
 
-# Scrape out details from DOM of visually similar image matches found
-if imglist:
-    soupHTML = imglist.get_attribute("innerHTML")
-    soup = BeautifulSoup(soupHTML.encode('utf-8', errors='ignore'), 'html.parser')
-    rows = soup.find_all('ul', {'class', 'wfx_row'})
-    if rows:
-        for row in rows: 
-            matches = row.find_all('li')
-            if matches:
-                for match in matches: 
-                    imgurl = match.find('a', href=True)
+except Exception as browser_err:
+    m.addUIMessage(str(browser_err), 'FatalError')  
 
-                    # Regex to patten match the original source URL embbedded within a larger URL string
-                    regex_source_url = re.findall(r"fromurl=(.*)", imgurl['href'].encode('utf8'))
-                    similar_source_urls.append(regex_source_url[0]) 
+# Scrape data related to visually similar matches found by reverse image search
+try:
+    # Select the 'visually similar' list of image results  
+    imglist = browser.find_element(By.CSS_SELECTOR, 'div.like-content')
 
-                    # Scrape out 360 image URL 
-                    imgsrc = match.find('img', src=True)
-                    similar_img_urls.append(imgsrc['src'].encode('utf8'))
+    # Scrape out details from DOM of visually similar image matches found
+    if imglist:
+        soupHTML = imglist.get_attribute("innerHTML")
+        soup = BeautifulSoup(soupHTML.encode('utf-8', errors='ignore'), 'html.parser')
+        rows = soup.find_all('ul', {'class', 'wfx_row'})
+        if rows:
+            for row in rows: 
+                matches = row.find_all('li')
+                if matches:
+                    for match in matches: 
+                        imgurl = match.find('a', href=True)
 
-# Close the browser instance
-browser.quit()
+                        # Regex to patten match the original source URL embbedded within a larger URL string
+                        regex_source_url = re.findall(r"fromurl=(.*)", imgurl['href'].encode('utf8'))
+                        similar_source_urls.append(regex_source_url[0]) 
 
-# Create Maltego entities for exact matches found by reverse image search
-for x in xrange(0, len(img_urls)):
-    myExactEntity = m.addEntity('maltego.Website', source_urls[x])
-    myExactEntity.addAdditionalFields('url', 'URL', False, source_urls[x])
-    myExactEntity.addAdditionalFields('match-type', 'Match Type', False, "Exact Match")
-    myExactEntity.addAdditionalFields('search-engine', 'Search Engine', False, "Qihoo 360 Images")
-    myExactEntity.setIconURL(img_urls[x])
-    myExactEntity.setBookmark('red')            # Add bookmark to entity to more easily distinguish and select exact matches from within the set of search results 
-    myExactEntity.setLinkColor('#bd1717')       # Set entity link colour to RED to also help more easily distinguish exact matches in search results
+                        # Scrape out 360 image URL 
+                        imgsrc = match.find('img', src=True)
+                        similar_img_urls.append(imgsrc['src'].encode('utf8'))
 
-# Create Maltego entities for visually similar matches found by reverse image search
-for x in xrange(0, len(similar_img_urls)):
-    mySimilarEntity = m.addEntity('maltego.Website', similar_source_urls[x])
-    mySimilarEntity.addAdditionalFields('url', 'URL', False, similar_source_urls[x])
-    mySimilarEntity.addAdditionalFields('match-type', 'Match Type', False, "Qihoo 360 - Similar Match")
-    mySimilarEntity.addAdditionalFields('search-engine', 'Search Engine', False, "Qihoo 360 Images")
-    mySimilarEntity.setIconURL(similar_img_urls[x])
+    # Close the browser instance
+    browser.quit()
+
+    # Create Maltego entities for exact matches found by reverse image search
+    for x in xrange(0, len(img_urls)):
+        myExactEntity = m.addEntity('maltego.Website', source_urls[x])
+        myExactEntity.addAdditionalFields('url', 'URL', False, source_urls[x])
+        myExactEntity.addAdditionalFields('match-type', 'Match Type', False, "Exact Match")
+        myExactEntity.addAdditionalFields('search-engine', 'Search Engine', False, "Qihoo 360 Images")
+        myExactEntity.setIconURL(img_urls[x])
+        myExactEntity.setBookmark('BOOKMARK_COLOR_RED')      # Add bookmark to entity to more easily distinguish and select exact matches from within the set of search results 
+        myExactEntity.setLinkColor('#bd1717')                # Set entity link colour to RED to also help more easily distinguish exact matches in search results
+
+    # Create Maltego entities for visually similar matches found by reverse image search
+    for x in xrange(0, len(similar_img_urls)):
+        mySimilarEntity = m.addEntity('maltego.Website', similar_source_urls[x])
+        mySimilarEntity.addAdditionalFields('url', 'URL', False, similar_source_urls[x])
+        mySimilarEntity.addAdditionalFields('match-type', 'Match Type', False, "Qihoo 360 - Similar Match")
+        mySimilarEntity.addAdditionalFields('search-engine', 'Search Engine', False, "Qihoo 360 Images")
+        mySimilarEntity.setIconURL(similar_img_urls[x])
+
+except Exception as scrape_err:
+    m.addUIMessage(str(scrape_err), 'PartialError')
 
 # Return Matlego entities to Maltego Chart
 m.returnOutput()
