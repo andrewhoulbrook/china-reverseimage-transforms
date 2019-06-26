@@ -1,10 +1,6 @@
 # China Reverse Image Search (Maltego Transforms)
 
-A set of three Maltego local transforms useful for performing reverse image searches via three of the most popular search engines in mainland China: 
-
-* [Baidu Images](https://images.baidu.com/)
-* [Qihoo 360 Images](http://images.so.com/)
-* [Sogou Images](https://image.sogou.com/)  |
+A set of three Maltego local transforms useful for performing reverse image searches via three of the most popular search engines in mainland China: [Baidu Images](https://images.baidu.com/), [Qihoo 360 Images](http://images.so.com/) and [Sogou Images](https://image.sogou.com/)
 
 <p align="center">
   <img src="/doc/baidu.jpg"/>
@@ -37,8 +33,6 @@ Qihoo 360 Reverse Image Search                    |
 </div>
 
 ### Prerequisites
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
 The transforms are written in Python 2.7.
 
