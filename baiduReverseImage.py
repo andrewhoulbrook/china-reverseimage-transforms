@@ -15,6 +15,9 @@ from fake_useragent import UserAgent
 # Set path to either chosen webdriver, e.g. CHROME_PATH = './chromedriver.exe'
 PHANTOMJS_PATH = './phantomjs.exe'
 
+# Instantitate a user-agent object
+ua = UserAgent()
+
 # Instantitate a Maltego transform object
 m = MaltegoTransform()
 
@@ -31,9 +34,7 @@ capabilities = DesiredCapabilities.CHROME.copy()
 capabilities['platform'] = "WINDOWS"
 capabilities['version'] = "39.0.2171.95"
 dcap = dict(capabilities)
-dcap["phantomjs.page.settings.userAgent"] = (
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36"
-    "(KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36)")
+dcap["phantomjs.page.settings.userAgent"] = (ua.random())
 
 # Instanitate a browser object using the Selenium and chosen webdriver, e.g. browser = webdriver.Chrome(CHROME_PATH)
 browser = webdriver.PhantomJS(PHANTOMJS_PATH, desired_capabilities=dcap)
