@@ -21,7 +21,7 @@ ua = UserAgent()
 # Instantitate a Maltego transform object
 m = MaltegoTransform()
 
-# Parse arugements passed from Matltgo image entity
+# Parse arguements passed from Maltego entities with a field named 'url'
 m.parseArguments(sys.argv)
 IMAGE_URL = m.getVar('url').decode('utf8')
 
@@ -34,7 +34,7 @@ capabilities = DesiredCapabilities.CHROME.copy()
 capabilities['platform'] = "WINDOWS"
 capabilities['version'] = "39.0.2171.95"
 dcap = dict(capabilities)
-dcap["phantomjs.page.settings.userAgent"] = (ua.random())
+dcap["phantomjs.page.settings.userAgent"] = (ua.random)
 
 # Instanitate a browser object using the Selenium and chosen webdriver, e.g. browser = webdriver.Chrome(CHROME_PATH)
 browser = webdriver.PhantomJS(PHANTOMJS_PATH, desired_capabilities=dcap)

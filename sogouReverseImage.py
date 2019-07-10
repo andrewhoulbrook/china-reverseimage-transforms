@@ -21,7 +21,7 @@ ua = UserAgent()
 # Instantiate a Maltego transform
 m = MaltegoTransform()
 
-# Parse arugements passed from Matltgo entities
+# Parse arguements passed from Maltego entities with a field named 'url'
 m.parseArguments(sys.argv)
 IMAGE_URL = m.getVar('url').decode('utf8')
 
@@ -35,7 +35,7 @@ capabilities = DesiredCapabilities.CHROME.copy()
 capabilities['platform'] = "WINDOWS"
 capabilities['version'] = "39.0.2171.95"
 dcap = dict(capabilities)
-dcap["phantomjs.page.settings.userAgent"] = (ua.random())
+dcap["phantomjs.page.settings.userAgent"] = (ua.random)
 
 # Instantiate a browser entity using Selenium and chosen webdriver, e.g. browser = webdriver.Chrome(CHROME_PATH)
 browser = webdriver.PhantomJS(PHANTOMJS_PATH, desired_capabilities=dcap)
@@ -111,8 +111,8 @@ try:
         myExactEntity.addAdditionalFields('url', 'URL', False, source_urls[x])
         myExactEntity.addAdditionalFields('match-type', 'Match Type', False, "Exact Match")
         myExactEntity.addAdditionalFields('search-engine', 'Search Engine', False, "Sogou Images")
-        myExactEntity.setBookmark('BOOKMARK_COLOR_RED')     # Add bookmark to entity to more easily distinguish and select exact matches from within the set of search results 
-        myExactEntity.setLinkColor('#bd1717')               # Set entity link colour to RED to also help more easily distinguish exact matches in search results
+        myExactEntity.setBookmark(BOOKMARK_COLOR_RED)     # Add bookmark to entity to more easily distinguish and select exact matches from within the set of search results 
+        myExactEntity.setLinkColor('#bd1717')             # Set entity link colour to RED to also help more easily distinguish exact matches in search results
 
     # Create Maltego entities for visually similar matches found by reverse image search
     for x in xrange(0, len(similar_img_urls)):
